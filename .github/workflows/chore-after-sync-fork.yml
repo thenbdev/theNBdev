@@ -1,0 +1,313 @@
+name: NB Next customisations
+on: 
+  push:
+    branches: [develop]
+env:
+  DEFAULT_BRANCH: "develop"
+  UPDATED_BRANCH: "develop-updated"
+  PATCH_DIR: ${{github.event.repository.name}}/customisation/patches/${{github.event.repository.name}}
+  STATIC_DIR: customisation/static/${{github.event.repository.name}}
+
+
+jobs:
+  nbnext:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ env.DEFAULT_BRANCH }}
+      - run: git checkout -b ${{ env.UPDATED_BRANCH }}
+
+
+      - name: Checkout customisations for applying patches
+        uses: actions/checkout@v3
+        with:
+          repository: thenbdev/Customisations
+          path: customisation
+
+      - name: Apply patches
+        # if: hashFiles('$PATCH_DIR')!=''  #TODO: why is this not working
+        continue-on-error: true
+        # Remove the exit 1 and then remove continue-on-errors in here
+        run: |
+          shopt -s nullglob
+
+          cd ..
+          if [ -d "$PATCH_DIR" ]; then
+            echo "Patches found in $PATCH_DIR:"
+            echo "$PATCH_DIR"/*.patch
+            for patch in "$PATCH_DIR"/*.patch; do
+              if [ -f "$patch" ]; then
+                echo "Starting $patch"
+                if git apply --directory=${{github.event.repository.name}} --ignore-space-change --verbose --check "$patch"; then
+                  echo "Applying patch $(basename "${patch%.*}")"
+                  git apply --directory=${{github.event.repository.name}} --ignore-space-change --verbose "$patch" || exit 1
+                  echo "Patch $(basename "${patch%.*}") applied"
+                else
+                  echo "Partially applied, or not applied at all"
+                  if git apply --directory=${{github.event.repository.name}} --ignore-space-change --verbose --reverse --check "$patch"; then
+                      git apply --directory=${{github.event.repository.name}} --ignore-space-change --reject --whitespace=fix "$patch" || exit 1
+                      echo "Applied patch ${patch##*/}"
+                  else
+                    echo "Failed to apply patch $(basename "${patch%.*}"). Check if there is a confict."
+                    # exit 1
+                  fi
+                fi
+              fi
+            done
+          else
+            echo "Patch directory $PATCH_DIR not found."
+          fi
+
+      - name: Cleanup customisation
+        run: rm -rf customisation
+
+      - name: Commit and Push - Patches
+        uses: thenbdev/cleanup-and-push@main
+        with:
+          branch: ${{ env.UPDATED_BRANCH }}
+          commit_message: "Automatically applied patches"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      - name: Find and Replace links (frappe.com)
+        uses: thenbdev/find-and-replace-links@main
+        with:
+          find: "frappe.com"
+          replace: "thenb.in"
+
+      - name: Find and Replace links (direct/docs, youtube)
+        uses: jacobtomlinson/gha-find-replace@v3
+        with:
+          find: (erpnext.com|youtube.com)
+          replace: "nbnextlinks"
+          regex: true
+
+      - name: Commit and Push - Replacements
+        uses: thenbdev/cleanup-and-push@main
+        with:
+          branch: ${{ env.UPDATED_BRANCH }}
+          commit_message: "NB Next Replacements Change links"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      # - name: Find and Replace erpnext(without spaces)
+      #   uses: thenbdev/find-and-replace@main
+      #   with:
+      #     find: "erpnext"  
+      #     replace: "nbnext"
+      #     words_only: true
+
+      # - name: Find and Replace erp next (with space)
+      #   uses: thenbdev/find-and-replace@main
+      #   with:
+      #     # Todo: /i doesn't work, make it case insensitive
+      #     find: "erp next"
+      #     replace: "NB Next"
+
+
+
+
+
+      # # TODO: Check this in translations
+      # - name: Module build fixes
+      #   uses: jacobtomlinson/gha-find-replace@v3
+      #   with:
+      #     exclude: "**/translations/*"
+      #     find: "NB Next Integrations"
+      #     replace: "ERPNext Integrations"
+      #     regex: false
+
+      # # TODO: Check this in translations
+      # - name: Module build fixes
+      #   uses: jacobtomlinson/gha-find-replace@v3
+      #   with:
+      #     exclude: "**/translations/*"
+      #     find: "NBNext Integrations"
+      #     replace: "ERPNext Integrations"
+      #     regex: false
+
+      # # TODO: Check this in translations
+      # - name: Module build fixes
+      #   uses: jacobtomlinson/gha-find-replace@v3
+      #   with:
+      #     exclude: "**/translations/*"
+      #     find: "nbnext_integrations"
+      #     replace: "erpnext_integrations"
+      #     regex: false
+
+      #  # TODO: Check this in translations
+      # - name: Module build fixes
+      #   uses: jacobtomlinson/gha-find-replace@v3
+      #   with:
+      #     exclude: "**/translations/*"
+      #     find: "NBNext Settings"
+      #     replace: "ERPNext Settings"
+      #     regex: false
+
+      #  # TODO: Check this in translations
+      # - name: Module build fixes
+      #   uses: jacobtomlinson/gha-find-replace@v3
+      #   with:
+      #     exclude: "**/translations/*"
+      #     find: "NBNext Settings"
+      #     replace: "ERPNext Settings"
+      #     regex: false
+
+      # # TODO: Check this in translations
+      # - name: Module build fixes
+      #   uses: jacobtomlinson/gha-find-replace@v3
+      #   with:
+      #     exclude: "**/translations/*"
+      #     find: "nbnext_settings"
+      #     replace: "erpnext_settings"
+      #     regex: false
+
+
+
+
+
+
+      # - name: Find and Replace undo repalce erpnext imports - 1
+      #   uses: thenbdev/find-and-replace@main
+      #   with:
+      #     find: "from nbnext"
+      #     replace: "from erpnext"
+      #     words_only: true
+
+      # - name: Find and Replace undo repalce erpnext imports - 2
+      #   uses: thenbdev/find-and-replace@main
+      #   with:
+      #     find: "import nbnext"
+      #     replace: "import erpnext"
+      #     words_only: true
+
+      # - name: Commit and Push - Replacements
+      #   uses: thenbdev/cleanup-and-push@main
+      #   with:
+      #     branch: ${{ env.UPDATED_BRANCH }}
+      #     commit_message: "NB Next Replacements ERP Next to NB Next"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      # - name: Find and Replace Frappe
+      #   uses: thenbdev/find-and-replace@main
+      #   with:
+      #     find: "Frappe"
+      #     replace: "theNB"
+      #     words_only: true
+      #     ignore_case: false
+
+      # - name: Commit and Push - Replacements
+      #   uses: thenbdev/cleanup-and-push@main
+      #   with:
+      #     branch: ${{ env.UPDATED_BRANCH }}
+      #     commit_message: "NB Next Replacements - Rename Frappe to theNB"
+
+
+
+
+
+
+
+
+
+
+
+
+
+      # Rename files and folders
+      # - name: Rename erpnext to nbnext
+      #   run: |
+      #     find . -depth -not -path '.git/*' -name "*erpnext*" -execdir bash -c 'mv "$1" "${1//erpnext/nbnext}"' bash {} \;
+
+      # - name: Rename erp_next to nb_next
+      #   run: |
+      #     find . -depth -not -path '.git/*' -name "*erp_next*" -execdir bash -c 'mv "$1" "${1//erp_next/nb_next}"' bash {} \;
+
+      # - name: Commit and Push - rename files and folders
+      #   uses: thenbdev/cleanup-and-push@main
+      #   with:
+      #     branch: ${{ env.UPDATED_BRANCH }}
+      #     commit_message: "NB Next Replacements Rename files and folders"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      - name: Checkout customisations for static data
+        uses: actions/checkout@v3
+        with:
+          repository: thenbdev/Customisations
+          path: customisation
+
+      - name: Find and Replace static files
+        run: |
+          shopt -s nullglob
+
+          if [ -d "$STATIC_DIR" ]; then
+            echo "Static found in $STATIC_DIR"
+            cp -r $STATIC_DIR/* .
+          else
+            echo "Patch directory $STATIC_DIR not found."
+          fi
+
+      - name: Cleanup customisation
+        run: rm -rf customisation
+
+      - name: Commit and Push - Static files
+        uses: thenbdev/cleanup-and-push@main
+        with:
+          branch: ${{ env.UPDATED_BRANCH }}
+          commit_message: "NB Next Replacements Static files"
