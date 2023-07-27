@@ -155,7 +155,15 @@ def get_rendered_template(
 			# set format data
 			format_data = json.loads(print_format.format_data)
 			for df in format_data:
-				format_data_map[df.get("fieldname")] = df
+				if isinstance(df, str):
+					format_data_map[df] =  {
+						"label": "",
+						"fieldname": "print_heading_template",
+						"fieldtype": "custom_html",
+						"html": df
+					}
+				else:
+					format_data_map[df.get("fieldname")] = df
 				if "visible_columns" in df:
 					for _df in df.get("visible_columns"):
 						format_data_map[_df.get("fieldname")] = _df
@@ -193,8 +201,8 @@ def get_rendered_template(
 
 	args = {}
 	# extract `print_heading_template` from the first field and remove it
-	if format_data and format_data[0].get("fieldname") == "print_heading_template":
-		args["print_heading_template"] = format_data.pop(0).get("options")
+	# if format_data and format_data[0].get("fieldname") == "print_heading_template":
+	# 	args["print_heading_template"] = format_data.pop(0).get("options")
 
 	args.update(
 		{
@@ -428,6 +436,11 @@ def make_layout(doc, meta, format_data=None):
 	for df in format_data or meta.fields:
 		if format_data:
 			# embellish df with original properties
+			if (df == "header"):
+				continue
+			if (isinstance(df, str)):
+				raise ValueError(df)
+
 			df = frappe._dict(df)
 			if df.fieldname:
 				original = meta.get_field(df.fieldname)

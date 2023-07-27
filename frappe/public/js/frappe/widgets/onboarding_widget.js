@@ -337,7 +337,7 @@ export default class OnboardingWidget extends Widget {
 		frappe.route_hooks.after_load = (frm) => {
 			const on_finish = () => {
 				frappe.msgprint({
-					message: __("Awesome, now try making an entry yourself"),
+					message: __("Entry created " + docname),
 					title: __("Document Saved"),
 					primary_action: {
 						action: () => {
