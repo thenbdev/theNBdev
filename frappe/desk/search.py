@@ -29,7 +29,7 @@ def search_link(
 	txt,
 	query=None,
 	filters=None,
-	page_length=20,
+	page_length=10,
 	searchfield=None,
 	reference_doctype=None,
 	ignore_user_permissions=False,
@@ -57,7 +57,7 @@ def search_widget(
 	query=None,
 	searchfield=None,
 	start=0,
-	page_length=20,
+	page_length=10,
 	filters=None,
 	filter_fields=None,
 	as_dict=False,
@@ -245,16 +245,17 @@ def search_widget(
 def get_std_fields_list(meta, key):
 	# get additional search fields
 	sflist = ["name"]
-	if meta.search_fields:
-		for d in meta.search_fields.split(","):
-			if d.strip() not in sflist:
-				sflist.append(d.strip())
 
 	if meta.title_field and meta.title_field not in sflist:
 		sflist.append(meta.title_field)
 
 	if key not in sflist:
 		sflist.append(key)
+
+	if meta.search_fields:
+		for d in meta.search_fields.split(","):
+			if d.strip() not in sflist:
+				sflist.append(d.strip())
 
 	return sflist
 

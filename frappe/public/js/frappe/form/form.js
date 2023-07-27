@@ -77,9 +77,12 @@ frappe.ui.form.Form = class FrappeForm {
 		// wrapper
 		this.wrapper = this.parent;
 		this.$wrapper = $(this.wrapper);
+
+		let is_single_column = this.doctype === "DocType" ? true : this.meta.hide_toolbar;
+
 		frappe.ui.make_app_page({
 			parent: this.wrapper,
-			single_column: this.meta.hide_toolbar,
+			single_column: is_single_column,
 		});
 		this.page = this.wrapper.page;
 		this.layout_main = this.page.main.get(0);
@@ -91,6 +94,11 @@ frappe.ui.form.Form = class FrappeForm {
 		this.toolbar = new frappe.ui.form.Toolbar({
 			frm: this,
 			page: this.page,
+		});
+
+		this.viewers = new frappe.ui.form.FormViewers({
+			frm: this,
+			parent: $('<div class="form-viewers d-flex"></div>').prependTo(this.page.page_actions),
 		});
 
 		// navigate records keyboard shortcuts
@@ -152,12 +160,14 @@ frappe.ui.form.Form = class FrappeForm {
 			action: () => this.undo_manager.undo(),
 			page: this.page,
 			description: __("Undo last action"),
+			condition: () => !this.is_form_builder(),
 		});
 		frappe.ui.keys.add_shortcut({
 			shortcut: "shift+ctrl+z",
 			action: () => this.undo_manager.redo(),
 			page: this.page,
 			description: __("Redo last action"),
+			condition: () => !this.is_form_builder(),
 		});
 		frappe.ui.keys.add_shortcut({
 			shortcut: "ctrl+y",
@@ -709,6 +719,7 @@ frappe.ui.form.Form = class FrappeForm {
 			}
 			this.toolbar.refresh();
 		}
+		this.viewers.refresh();
 
 		this.dashboard.refresh();
 		frappe.breadcrumbs.update();
@@ -741,7 +752,7 @@ frappe.ui.form.Form = class FrappeForm {
 				me.show_success_action();
 			})
 			.catch((e) => {
-				console.error(e); // eslint-disable-line
+				console.error(e);
 			});
 	}
 
@@ -1355,6 +1366,13 @@ frappe.ui.form.Form = class FrappeForm {
 		return this.doc.__islocal;
 	}
 
+	is_form_builder() {
+		return (
+			in_list(["DocType", "Customize Form"], this.doctype) &&
+			this.get_active_tab().label == "Form"
+		);
+	}
+
 	get_perm(permlevel, access_type) {
 		return this.perm[permlevel] ? this.perm[permlevel][access_type] : null;
 	}
@@ -1944,7 +1962,7 @@ frappe.ui.form.Form = class FrappeForm {
 		let docname = this.docname;
 
 		if (this.doc && !this.is_new()) {
-			frappe.socketio.doc_subscribe(doctype, docname);
+			frappe.realtime.doc_subscribe(doctype, docname);
 		}
 		frappe.realtime.off("docinfo_update");
 		frappe.realtime.on("docinfo_update", ({ doc, key, action = "update" }) => {

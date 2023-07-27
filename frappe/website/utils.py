@@ -170,6 +170,7 @@ def get_boot_data():
 			"user": frappe.db.get_value("User", frappe.session.user, "time_zone") or get_system_timezone(),
 		},
 		"assets_json": get_assets_json(),
+		"sitename": frappe.local.site,
 	}
 
 
@@ -356,7 +357,14 @@ def clear_cache(path=None):
 	:param path: (optional) for the given path"""
 	from frappe.website.router import clear_routing_cache
 
-	for key in ("website_generator_routes", "website_pages", "website_full_index", "sitemap_routes"):
+	for key in (
+		"website_generator_routes",
+		"website_pages",
+		"website_full_index",
+		"sitemap_routes",
+		"languages_with_name",
+		"languages",
+	):
 		frappe.cache.delete_value(key)
 
 	clear_routing_cache()

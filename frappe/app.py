@@ -33,12 +33,17 @@ _sites_path = os.environ.get("SITES_PATH", ".")
 
 # If gc.freeze is done then importing modules before forking allows us to share the memory
 if frappe._tune_gc:
+	import bleach
+	import pydantic
+
 	import frappe.boot
 	import frappe.client
+	import frappe.core.doctype.file.file
 	import frappe.core.doctype.user.user
 	import frappe.database.mariadb.database  # Load database related utils
 	import frappe.database.query
 	import frappe.desk.desktop  # workspace
+	import frappe.desk.form.save
 	import frappe.model.db_query
 	import frappe.query_builder
 	import frappe.utils.background_jobs  # Enqueue is very common
@@ -279,6 +284,8 @@ def handle_exception(e):
 		or (frappe.local.request.path.startswith("/api/") and not accept_header.startswith("text"))
 	)
 
+	allow_traceback = frappe.get_system_settings("allow_error_traceback") if frappe.db else False
+
 	if not frappe.session.user:
 		# If session creation fails then user won't be unset. This causes a lot of code that
 		# assumes presence of this to fail. Session creation fails => guest or expired login
@@ -333,7 +340,7 @@ def handle_exception(e):
 	else:
 		traceback = "<pre>" + sanitize_html(frappe.get_traceback()) + "</pre>"
 		# disable traceback in production if flag is set
-		if frappe.local.flags.disable_traceback and not frappe.local.dev_server:
+		if frappe.local.flags.disable_traceback or not allow_traceback and not frappe.local.dev_server:
 			traceback = ""
 
 		frappe.respond_as_web_page(
