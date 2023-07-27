@@ -6,7 +6,7 @@
 		</a>
 	</h1>
 	<h3>
-		a web framework with <a href="https://www.youtube.com/watch?v=LOjk3m0wTwg">"batteries included"</a>
+		a web framework with <a href="https://www.nbnextlinks/watch?v=LOjk3m0wTwg">"batteries included"</a>
 	</h3>
 	<h5>
 		it's pronounced - <em>fra-pay</em>
@@ -35,7 +35,7 @@
 </div>
 
 
-Full-stack web application framework that uses Python and MariaDB on the server side and a tightly integrated client side library. Built for [ERPNext](https://erpnext.com).
+Full-stack web application framework that uses Python and MariaDB on the server side and a tightly integrated client side library. Built for [ERPNext](https://nbnextlinks).
 
 <div align="center" style="max-height: 40px;">
 	<a href="https://frappecloud.com/frappe/signup">
@@ -71,7 +71,7 @@ Full-stack web application framework that uses Python and MariaDB on the server 
 1. [Code of Conduct](CODE_OF_CONDUCT.md)
 1. [Contribution Guidelines](https://github.com/frappe/erpnext/wiki/Contribution-Guidelines)
 1. [Security Policy](SECURITY.md)
-1. [Translations](https://translate.erpnext.com)
+1. [Translations](https://translate.nbnextlinks)
 
 ## Resources
 

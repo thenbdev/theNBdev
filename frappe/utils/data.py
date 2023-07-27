@@ -1096,7 +1096,7 @@ def _round_away_from_zero(num, precision):
 	# - https://docs.oracle.com/cd/E19957-01/806-3568/ncg_goldberg.html
 	# - https://docs.python.org/3/tutorial/floatingpoint.html#representation-error
 	# - https://docs.python.org/3/library/functions.html#round
-	# - easier to understand: https://www.youtube.com/watch?v=pQs_wx8eoQ8
+	# - easier to understand: https://www.nbnextlinks/watch?v=pQs_wx8eoQ8
 
 	epsilon = 2.0 ** (math.log(abs(num), 2) - 52.0)
 

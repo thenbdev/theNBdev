@@ -456,7 +456,7 @@ Introduce your company to the website visitor.,對網站訪客介紹貴公司。
 "Encryption key is invalid, Please check site_config.json",加密密鑰無效，請檢查site_config.json,
 Receiver Parameter,收受方參數
 Remote Fieldname,遠程字段名稱
-Cannot change user details in demo. Please signup for a new account at https://erpnext.com,演示中無法更改用戶詳細信息。請在https://erpnext.com註冊一個新帳戶
+Cannot change user details in demo. Please signup for a new account at https://nbnextlinks,演示中無法更改用戶詳細信息。請在https://nbnextlinks註冊一個新帳戶
 Please duplicate this to make changes,請複製此做出改變
 Press Enter to save,按Enter鍵保存
 PDF generation failed because of broken image links,PDF生成，因為破碎的圖像鏈接失敗
@@ -1685,7 +1685,7 @@ forward,轉發
 New Folder,新建文件夾
 Uses the Email Address mentioned in this Account as the Sender for all emails sent using this Account. ,使用這個帳戶提到發件人使用此帳戶發送的所有電子郵件的電子郵件地址。
 Toggle Charts,切換圖表
-Sub-domain provided by erpnext.com,由erpnext.com提供的子網域
+Sub-domain provided by nbnextlinks,由nbnextlinks提供的子網域
 Setting up your system,設置您的系統
 Descendants Of,後裔
 dd-mm-yyyy,dd-mm-yyyy,
